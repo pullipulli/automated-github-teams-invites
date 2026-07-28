@@ -7,7 +7,6 @@ require 'set'
 
 TOKEN = ENV['GITHUB_TOKEN']
 ORG_NAME = ENV['ORGANIZATION_NAME']
-TEAM_NAME = ENV['TEAM_NAME']
 BACKGROUND_CHOICE = ENV['BACKGROUND_COLOR']
 
 if BACKGROUND_CHOICE == 'green'
@@ -64,7 +63,6 @@ def get_org_id(client)
   end
 end
 
-# TODO(Jonathon): Remove unused function
 def get_org_teams(client)
   begin
     teams = client.org_teams(ORG_NAME)
@@ -79,12 +77,6 @@ def check_org_exists(client)
     return true
   end
   return false
-end
-
-def get_team(client)
-  teams = client.org_teams(ORG_NAME)
-  team = teams.find {|t| t.slug.downcase == TEAM_NAME.downcase }
-  return team
 end
 
 def add_user_to_org(client, username)
@@ -114,7 +106,7 @@ end
 # The URL for the Organisation's picture/avatar
 avatar = get_org_avatar_url(client)
 org_id = get_org_id(client)
-
+teams = get_org_teams(client)
 teams = teams.select { |teamStruct| approvedTeams.include?(teamStruct.name) }
 
 l = Slim::Template.new { @layout }
@@ -122,20 +114,20 @@ l = Slim::Template.new { @layout }
 # ROUTES #
 
 get "/" do
-  slim l.render(Object.new, :avatar => avatar, :org_name => ORG_NAME, :background_css => background_css)
+  slim l.render(Object.new, :avatar => avatar, :org_name => ORG_NAME, :background_css => background_css, :teams => teams)
 end
 
 post "/add" do
   username = params["github-user"]
+  team_id = params["team_id"]
+
   unless user_exists?(client, username)
     return "User not found. Please check your spelling"
   end
 
-  team = get_team(client)
-  if team.nil?
-    # team was blank or could not be found, just add user to org
-    add_user_to_org(client, username)
-  else
-    add_user_to_team_in_org(client, username, team.id)
+  if team_id.nil? || team_id.empty?
+    return "Please select a valid team"
   end
+
+  add_user_to_team_in_org(client, username, team_id)
 end
