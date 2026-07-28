@@ -16,4 +16,8 @@ html
         form action="add" method="POST"
           p{class="caption"} Enter your GitHub username
           input.input_box type="text" name="github-user"
+          select name="team_id" id="team_id" required=true
+            option value="" disabled=true selected=true Select a team...
+            - teams.each do |team|
+              option value=team.id = team.name
           input.button type="submit" value="Add me to organization"

@@ -3,6 +3,7 @@ require 'bundler/setup'
 require 'sinatra'
 require 'slim'
 require 'octokit'
+require 'set'
 
 TOKEN = ENV['GITHUB_TOKEN']
 ORG_NAME = ENV['ORGANIZATION_NAME']
@@ -22,6 +23,14 @@ elsif BACKGROUND_CHOICE == 'grey'
 else
     background_css = "/css/background_colors/white.css"
 end
+
+approvedTeams = Set[]
+
+fileObj = File.new("TEAM_NAMES", "r")
+while (line = fileObj.gets)
+  approvedTeams.add(line.chomp.strip)
+end
+fileObj.close
 
 html_template_path = File.join(__dir__, 'views', 'index.slim')
 @layout = File.read(html_template_path)
@@ -89,8 +98,14 @@ end
 
 def add_user_to_team_in_org(client, username, team_id)
   begin
-    client.add_team_membership(team_id, username)
-    "Sent invite to join '#{ORG_NAME}' and team '#{TEAM_NAME}', Check your EMAIL"
+    team_name = client.team(team_id).name
+
+    if (approvedTeams.include?(team_name))
+      client.add_team_membership(team_id, username)
+      "Sent invite to join '#{ORG_NAME}' and team '#{team_name}', Check your EMAIL"
+    else
+      "You do not have access to #{team_name}. Gotcha :)"
+    end
   rescue Octokit::ClientError => e
     "Error: #{e.class}. #{e.message}"
   end
@@ -99,6 +114,8 @@ end
 # The URL for the Organisation's picture/avatar
 avatar = get_org_avatar_url(client)
 org_id = get_org_id(client)
+
+teams = teams.select { |teamStruct| approvedTeams.include?(teamStruct.name) }
 
 l = Slim::Template.new { @layout }
 
