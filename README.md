@@ -1,33 +1,26 @@
-# Automated Github Organization (and Team) Invites
-[![Code Climate](https://codeclimate.com/github/thundergolfer/automated-github-organization-invites/badges/gpa.svg)](https://codeclimate.com/github/thundergolfer/automated-github-organization-invites) [![Issue Count](https://codeclimate.com/github/thundergolfer/automated-github-organization-invites/badges/issue_count.svg)](https://codeclimate.com/github/thundergolfer/automated-github-organization-invites)
-
-> Quickly host a webpage to allow people to click and receive an invite to your Github Organization and an (optional) default team.
-
-<p align="center">
-  <img src="auto-invites-example-ui.png"/>
-</p>
+# Automated Github Organization and Team Invites
+> Quickly host a webpage to allow people to click and receive an invite to your Github Organization and a selected team.
 
 ### Features
 
 * Validates submitted Github usernames
 * Links in your Github Organization's avatar/image
 * Lightweight
-* Optionally auto-invite to a team inside the organization
+* Auto-invite to a team inside the organization
 
-### Get It Right Now
+### How to use it?
+*Example commands with Ubuntu*
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+**Install Prerequisites:**
 
-All you have to do is
+```
+sudo apt update
+sudo gem install bundler
+sudo bundle config set --local platform ruby
+sudo apt install -y build-essential ruby-dev libssl-dev libxml2-dev libxslt1-dev zlib1g-dev
+```
 
-1. Click **Deploy to Heroku**
-2. Fill in the **Environment Variables** when prompted. These will be a *[Github Access Token](https://github.com/blog/1509-personal-api-tokens)*, which should have Organization privileges enabled, and a *GitHub Organization name*, and a *background color*. The choices are `{blue,green,grey,pink,red,white}`. If you don't enter one of those strings it defaults to 'white'. Lastly an optional *GitHub Organization team* can also be specified if you want your users to auto-join a default team.
-
-#### All Done! Just share the Heroku App's URL to people and they'll be able to get themselves an invite to your organisation.
-
-### Development
-
-**Install:** 
+**Install dependencies:** 
 
 ```
 bundle install
@@ -35,10 +28,15 @@ bundle install
 
 **Run Locally:**
 
+1. Open the TEAM_NAMES file in a text editor. For each line, write a valid team name of your organization, the others are going to be intentionally ignored by this website.
+2. Set ORGANIZATION_NAME to the name of the organization where the teams have been created.
+3. Set GIHUB_TOKEN to your [GitHub personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic).
+4. Finally, execute it:
+
 ```bash
 ORGANIZATION_NAME="foo" GITHUB_TOKEN="bar"  bundle exec ruby web_app.rb
 ```
 
-### Credit 
+### Credits 
 
-Thanks to *[Code, Applied To Life](https://medium.com/code-applied-to-life/automated-github-organization-invites-3e940aa27040#.sikfvzyaj)* for their efforts which were used as a base for this.
+Thanks to [the original author](https://github.com/thundergolfer/automated-github-organization-invites) for his work.
