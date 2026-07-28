@@ -8,6 +8,7 @@ require 'set'
 TOKEN = ENV['GITHUB_TOKEN']
 ORG_NAME = ENV['ORGANIZATION_NAME']
 BACKGROUND_CHOICE = ENV['BACKGROUND_COLOR']
+APPROVED_TEAMS = Set[]
 
 if BACKGROUND_CHOICE == 'green'
     background_css = "/css/background_colors/green.css"
@@ -23,11 +24,9 @@ else
     background_css = "/css/background_colors/white.css"
 end
 
-approvedTeams = Set[]
-
 fileObj = File.new("TEAM_NAMES", "r")
 while (line = fileObj.gets)
-  approvedTeams.add(line.chomp.strip)
+  APPROVED_TEAMS.add(line.chomp.strip)
 end
 fileObj.close
 
@@ -92,7 +91,7 @@ def add_user_to_team_in_org(client, username, team_id)
   begin
     team_name = client.team(team_id).name
 
-    if (approvedTeams.include?(team_name))
+    if (APPROVED_TEAMS.include?(team_name))
       client.add_team_membership(team_id, username)
       "Sent invite to join '#{ORG_NAME}' and team '#{team_name}', Check your EMAIL"
     else
@@ -107,7 +106,7 @@ end
 avatar = get_org_avatar_url(client)
 org_id = get_org_id(client)
 teams = get_org_teams(client)
-teams = teams.select { |teamStruct| approvedTeams.include?(teamStruct.name) }
+teams = teams.select { |teamStruct| APPROVED_TEAMS.include?(teamStruct.name) }
 
 l = Slim::Template.new { @layout }
 
