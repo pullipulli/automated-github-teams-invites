@@ -37,6 +37,8 @@ bundle install
 ORGANIZATION_NAME="foo" GITHUB_TOKEN="bar"  bundle exec ruby web_app.rb
 ```
 
+This command will try to host a server on ```http://localhost:4567/```.
+
 ### Credits 
 
 Thanks to [the original author](https://github.com/thundergolfer/automated-github-organization-invites) for his work.
